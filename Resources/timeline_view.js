@@ -15,21 +15,25 @@ reloadButton.addEventListener('click', function(e) {
 });
 win1.leftNavButton = reloadButton;
 
-var messageButton = Ti.UI.createButton({
-	systemButton: Titanium.UI.iPhone.SystemButton.ADD
-});
-messageButton.addEventListener('click', function(e) {
+function showSendMessageWindow(title, timelineType, replyToMsgId) {
 	var messageWindow = Ti.UI.createWindow({
 		url: 'message_window.js',
-		title: 'new message',
+		title: title,
 		color: themeFGColorMain,
 		backgroundColor: themeBGColor,
 		backgroundColorLight: themeBGColorLight,
 		layout: 'vertical',
-		isPrivate: win1.timeline_type === 'private'
+		isPrivate: timelineType === 'private',
+		replyToMsgId: replyToMsgId
 	});
-//	messageWindow.open();
 	Ti.UI.currentTab.open(messageWindow);
+}
+
+var messageButton = Ti.UI.createButton({
+	systemButton: Titanium.UI.iPhone.SystemButton.ADD
+});
+messageButton.addEventListener('click', function(e) {
+	showSendMessageWindow('new message', win1.timeline_type);
 });
 win1.rightNavButton = messageButton;
 
@@ -62,6 +66,7 @@ function setCreatedAt(createdAt) {
 }
 
 var timelineData = [];
+var timelineMetaData = {};
 function updateTimeline(timeline) {
 	var heads = [];
 	var tails = [];
@@ -123,6 +128,24 @@ function updateTimeline(timeline) {
 			dateLabel.text = String.formatDate(createdAtUtc, 'medium') + ' ' + String.formatTime(createdAtUtc, 'medium');
 			row.add(dateLabel);
 			
+			var replyButton = Ti.UI.createButton({
+				width: 'auto',
+				height: 'auto',
+				left: 58,
+				top: 2,
+				color: themeFGColorSub,
+				title: 'reply'
+			});
+			var replyHandler = (function() {
+				var sourceMsgId = tlItem['_id'];
+				return function(e) {
+					var orgMsg = timelineMetaData[sourceMsgId];
+					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id']);
+				};
+			})();
+			replyButton.addEventListener('click', replyHandler);
+			row.add(replyButton);
+			
 			if (newMessageStatus === 'newer') {
 				heads.push(row);
 			}
@@ -130,6 +153,8 @@ function updateTimeline(timeline) {
 				tails.push(row);
 			}
 			setCreatedAt(createdAtUtc);
+			
+			timelineMetaData[tlItem['_id']] = tlItem;
 		}
 	});
 	var nextData = heads.concat(timelineData);

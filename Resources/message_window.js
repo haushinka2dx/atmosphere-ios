@@ -48,6 +48,7 @@ if (win.isPrivate) {
 			atmos.sendPrivateMessage(
 				addressesTextArea.value,
 				messageTextArea.value,
+				win.replyToMsgId,
 				function(e) { win.close(); },
 				function(e) { alert('failed to send message'); }
 			);
@@ -62,6 +63,7 @@ else {
 		if (messageTextArea.value) {
 			atmos.sendMessage(
 				messageTextArea.value,
+				win.replyToMsgId,
 				function(e) {
 					win.close();
 				}
