@@ -1,6 +1,7 @@
 var win1 = Ti.UI.currentWindow;
 
-var atmos = require('atmos');
+var atmos = win1.atmos;
+Ti.API.info('atmos.currentUserId is ' + atmos.currentUserId());
 var theme = require('theme');
 var themeFGColorMain = theme.colorMain();
 var themeFGColorSub = theme.colorSub();
@@ -15,7 +16,7 @@ reloadButton.addEventListener('click', function(e) {
 });
 win1.leftNavButton = reloadButton;
 
-function showSendMessageWindow(title, timelineType, replyToMsgId) {
+function showSendMessageWindow(title, timelineType, replyToMsgId, toUserIds) {
 	var messageWindow = Ti.UI.createWindow({
 		url: 'message_window.js',
 		title: title,
@@ -24,7 +25,9 @@ function showSendMessageWindow(title, timelineType, replyToMsgId) {
 		backgroundColorLight: themeBGColorLight,
 		layout: 'vertical',
 		isPrivate: timelineType === 'private',
-		replyToMsgId: replyToMsgId
+		replyToMsgId: replyToMsgId,
+		toUserIds: toUserIds,
+		atmos: atmos
 	});
 	Ti.UI.currentTab.open(messageWindow);
 }
@@ -138,9 +141,21 @@ function updateTimeline(timeline) {
 			});
 			var replyHandler = (function() {
 				var sourceMsgId = tlItem['_id'];
+				if (tlItem['to_user_id']) { // for private
+					var toUserIds = tlItem['to_user_id'];
+					var createdBy = tlItem['created_by'];
+					var currentUserId = atmos.currentUserId();
+					Ti.API.info('currentUserId: ' + currentUserId);
+					var addressesUsers = [];
+					toUserIds.forEach(function(userId, i, a) { if (userId !== currentUserId) { addressesUsers.push(userId); } });
+					if (createdBy !== currentUserId && addressesUsers.indexOf(createdBy) === -1) {
+						addressesUsers.push(createdBy);
+					}
+					Ti.API.info('addressesUsers: ' + addressesUsers);
+				}
 				return function(e) {
 					var orgMsg = timelineMetaData[sourceMsgId];
-					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id']);
+					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id'], addressesUsers);
 				};
 			})();
 			replyButton.addEventListener('click', replyHandler);

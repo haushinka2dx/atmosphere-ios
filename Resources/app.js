@@ -10,6 +10,9 @@ var backgroundColorLight = theme.backgroundColorLight();
 var atmos = require('atmos');
 atmos.whoami(
 	function(e) {
+		var resJSON = JSON.parse(e.source.responseText);
+		Ti.API.info('resJSON: ' + JSON.stringify(resJSON));
+		atmos.currentUserId(resJSON['user_id']);
 		startMainWindow();
 	},
 	function(e) {
@@ -31,6 +34,23 @@ function showSignInWindow() {
 }
 
 function startMainWindow() {
+
+	atmos.whoami(
+		function(e) {
+			var resJSON = JSON.parse(e.source.responseText);
+			Ti.API.info('resJSON: ' + JSON.stringify(resJSON));
+			if (resJSON.status == 'ok') {
+				atmos.currentUserId(resJSON['user_id']);
+			}
+			else {
+				alert('whoami was failed.');
+			}
+		},
+		function(e) {
+			alert('whoami was failed.');
+		}
+	);
+
 	// create tab group
 	var tabGroup = Titanium.UI.createTabGroup();
 
@@ -41,7 +61,8 @@ function startMainWindow() {
 		url: 'timeline_view.js',
 	    title:"Everyone's Messages",
 	    backgroundColor:'#2980b9', // #2980b9 for global, #e2620c for private, #16a085 for talk
-	    timeline_type: 'global'
+	    timeline_type: 'global',
+	    atmos: atmos
 	});
 	// win1.hideTabBar();
 	var tab1 = Titanium.UI.createTab({  
@@ -54,7 +75,8 @@ function startMainWindow() {
 		url: 'timeline_view.js',
 	    title:'Messages for you',
 	    backgroundColor:'#16a085',
-	    timeline_type: 'talk'
+	    timeline_type: 'talk',
+	    atmos: atmos
 	});
 	var tab2 = Titanium.UI.createTab({  
 		// icon: 'chat25.png',
@@ -66,7 +88,8 @@ function startMainWindow() {
 		url: 'timeline_view.js',
 	    title:'Private Messages',
 	    backgroundColor:'#e2620c',
-	    timeline_type: 'private'
+	    timeline_type: 'private',
+	    atmos: atmos
 	});
 	var tab3 = Titanium.UI.createTab({  
 		// icon: 'mail21.png',

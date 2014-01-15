@@ -11,20 +11,27 @@ win.leftNavButton = backButton;
 if (win.isPrivate) {
 	var addressesTextArea = Ti.UI.createTextArea({
 		width: 300,
-		height: 30,
-		top: 20,
+		height: 25,
+		top: 10,
 	    font: {fontSize: 20},
 		color: win.color,
 		backgroundColor: win.backgroundColorLight,
 		hintText: 'Input addresses e.g. @bob @john'
 	});
+	if (win.toUserIds && win.toUserIds.length > 0) {
+		var destAddresses = '';
+		win.toUserIds.forEach(function(userId, i, a) {
+			destAddresses += ' @' + userId;
+		});
+		addressesTextArea.value = destAddresses;
+	}
 	win.add(addressesTextArea);
 }
 
 var messageTextArea = Ti.UI.createTextArea({
 	width: 300,
 	height: 150,
-	top: 20,
+	top: 10,
 	font: {fontSize: 20},
 	color: win.color,
 	backgroundColor: win.backgroundColorLight,
@@ -32,7 +39,7 @@ var messageTextArea = Ti.UI.createTextArea({
 win.add(messageTextArea);
 
 var postButton = Ti.UI.createButton({
-	top: 10,
+	top: 5,
 	right: 10,
 	width: 100,
 	height: 44,
@@ -41,7 +48,7 @@ var postButton = Ti.UI.createButton({
 	title: 'SEND'
 });
 
-var atmos = require('atmos');
+var atmos = win.atmos;
 if (win.isPrivate) {
 	var postAction = function(e) {
 		if (addressesTextArea.value && messageTextArea.value) {
