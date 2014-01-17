@@ -167,11 +167,14 @@ function updateTimeline(timeline) {
 			else {
 				tails.push(row);
 			}
-			setCreatedAt(createdAtUtc);
 			
 			timelineMetaData[tlItem['_id']] = tlItem;
 		}
 	});
+	timeline.forEach(function(tlItem, i, a) {
+		setCreatedAt(new Date(tlItem['created_at']));
+	});
+	
 	var nextData = heads.concat(timelineData);
 	nextData = nextData.concat(tails);
 	tableView.setData(nextData);
