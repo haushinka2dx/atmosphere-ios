@@ -94,7 +94,7 @@ function updateTimeline(timeline) {
 			row.add(imageView);
 			
 			var nameLabel = Ti.UI.createLabel({
-				width: 120,
+				width: 257,
 	//			height: 12,
 				height: 'auto',
 				left: 58,
