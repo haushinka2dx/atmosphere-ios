@@ -6,9 +6,7 @@ var currentUserId = undefined;
 exports.currentUserId = function(userId) {
 	if (typeof(userId) !== 'undefined' && userId != null && userId.length > 0) {
 		currentUserId = userId;
-		Ti.API.info('currentUserId was set[' + userId + ']');
 	}
-	Ti.API.info('currentUserId is[' + userId + ']');
 	return currentUserId;
 };
 

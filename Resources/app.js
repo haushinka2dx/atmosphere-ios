@@ -62,7 +62,8 @@ function startMainWindow() {
 	    title:"Everyone's Messages",
 	    backgroundColor:'#2980b9', // #2980b9 for global, #e2620c for private, #16a085 for talk
 	    timeline_type: 'global',
-	    atmos: atmos
+	    atmos: atmos,
+	    currentUserId: atmos.currentUserId()
 	});
 	// win1.hideTabBar();
 	var tab1 = Titanium.UI.createTab({  
@@ -76,7 +77,8 @@ function startMainWindow() {
 	    title:'Messages for you',
 	    backgroundColor:'#16a085',
 	    timeline_type: 'talk',
-	    atmos: atmos
+	    atmos: atmos,
+	    currentUserId: atmos.currentUserId()
 	});
 	var tab2 = Titanium.UI.createTab({  
 		// icon: 'chat25.png',
@@ -89,7 +91,8 @@ function startMainWindow() {
 	    title:'Private Messages',
 	    backgroundColor:'#e2620c',
 	    timeline_type: 'private',
-	    atmos: atmos
+	    atmos: atmos,
+	    currentUserId: atmos.currentUserId()
 	});
 	var tab3 = Titanium.UI.createTab({  
 		// icon: 'mail21.png',
