@@ -119,12 +119,12 @@ function updateTimeline(timeline) {
 			row.add(commentLabel);
 	
 			var dateLabel = Ti.UI.createLabel({
-				width: 257,
+				width: 180,
 	//			height: 12,
 				height: 'auto',
-				left: 58,
+				right: 0,
 				top: 5,
-				fontSize: 4,
+				font: {fontSize: 1},
 				color: themeFGColorSub
 			});
 			//var createdAtUtc = new Date(tlItem['created_at']);
@@ -137,12 +137,17 @@ function updateTimeline(timeline) {
 				left: 58,
 				top: 2,
 				color: themeFGColorSub,
-				title: 'reply'
+				backgroundImage: 'reply_s.png'
 			});
 			var replyHandler = (function() {
 				var sourceMsgId = tlItem['_id'];
 				if (tlItem['to_user_id']) { // for private
 					var toUserIds = tlItem['to_user_id'];
+				}
+				if (tlItem['addresses'] && tlItem['addresses']['users']) {
+					var toUserIds = tlItem['addresses']['users'];
+				}
+				if (toUserIds) {
 					var createdBy = tlItem['created_by'];
 					var addressesUsers = [];
 					toUserIds.forEach(function(userId, i, a) { if (userId !== currentUserId) { addressesUsers.push(userId); } });

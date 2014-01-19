@@ -36,6 +36,13 @@ var messageTextArea = Ti.UI.createTextArea({
 	color: win.color,
 	backgroundColor: win.backgroundColorLight,
 });
+if (!win.isPrivate && win.toUserIds && win.toUserIds.length > 0) {
+	var destAddresses = '';
+	win.toUserIds.forEach(function(userId, i, a) {
+		destAddresses += ' @' + userId;
+	});
+	messageTextArea.value = destAddresses;
+}
 win.add(messageTextArea);
 
 var postButton = Ti.UI.createButton({

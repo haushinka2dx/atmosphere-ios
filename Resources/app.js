@@ -67,7 +67,7 @@ function startMainWindow() {
 	});
 	// win1.hideTabBar();
 	var tab1 = Titanium.UI.createTab({  
-		// icon: 'iphone/globe14.png',
+		icon: 'globe14w_s.png',
 	    title:"Everyone's Messages",
 	    window:win1
 	});
@@ -81,7 +81,7 @@ function startMainWindow() {
 	    currentUserId: atmos.currentUserId()
 	});
 	var tab2 = Titanium.UI.createTab({  
-		// icon: 'chat25.png',
+		icon: 'chat25w_s.png',
 	    title:'Messages for you',
 	    window:win2
 	});
@@ -95,7 +95,7 @@ function startMainWindow() {
 	    currentUserId: atmos.currentUserId()
 	});
 	var tab3 = Titanium.UI.createTab({  
-		// icon: 'mail21.png',
+		icon: 'mail21w_s.png',
 	    title:'Private Messages',
 	    backgroundColor:'#e2620c',
 	    window:win3
