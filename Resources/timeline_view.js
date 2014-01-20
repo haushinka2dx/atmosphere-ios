@@ -1,7 +1,7 @@
 var win1 = Ti.UI.currentWindow;
-var currentUserId = win1.currentUserId;
 
 var atmos = win1.atmos;
+var currentUserId = atmos.currentUserId();
 var theme = require('theme');
 var themeFGColorMain = theme.colorMain();
 var themeFGColorSub = theme.colorSub();
