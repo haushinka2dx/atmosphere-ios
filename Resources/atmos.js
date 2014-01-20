@@ -1,6 +1,14 @@
 var atmosSessionIdKey = 'atmosphere-session-id';
 var atmosSessionId = undefined;
 var urlBase = 'http://localhost/atmos/';
+var currentUserId = undefined;
+
+exports.currentUserId = function(userId) {
+	if (typeof(userId) !== 'undefined' && userId != null && userId.length > 0) {
+		currentUserId = userId;
+	}
+	return currentUserId;
+};
 
 exports.whoami = function(onsuccess, onfailure) {
 	sendRequest(urlBase + 'auth/whoami', 'GET', undefined, onsuccess, onfailure);
@@ -23,13 +31,13 @@ exports.getPrivateTimeline = function(onsuccess, onfailure) {
 	sendRequest(urlBase + 'private/timeline', 'GET', undefined, onsuccess, onfailure);
 };
 
-exports.sendMessage = function(message, onsuccess, onfailure) {
-	var data = {'message':message};
+exports.sendMessage = function(message, replyToMsgId, onsuccess, onfailure) {
+	var data = {'message':message, 'reply_to':replyToMsgId};
 	sendRequest(urlBase + 'messages/send', 'POST', data, onsuccess, onfailure);
 };
 
-exports.sendPrivateMessage = function(addressUsers, message, onsuccess, onfailure) {
-	var data = {'to_user_id': addressUsers, 'message':message};
+exports.sendPrivateMessage = function(addressUsers, message, replyToMsgId, onsuccess, onfailure) {
+	var data = {'to_user_id': addressUsers, 'message':message, 'reply_to':replyToMsgId};
 	sendRequest(urlBase + 'private/send', 'POST', data, onsuccess, onfailure);
 };
 

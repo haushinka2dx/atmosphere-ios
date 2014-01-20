@@ -1,6 +1,7 @@
 var win1 = Ti.UI.currentWindow;
 
-var atmos = require('atmos');
+var atmos = win1.atmos;
+var currentUserId = atmos.currentUserId();
 var theme = require('theme');
 var themeFGColorMain = theme.colorMain();
 var themeFGColorSub = theme.colorSub();
@@ -15,21 +16,27 @@ reloadButton.addEventListener('click', function(e) {
 });
 win1.leftNavButton = reloadButton;
 
-var messageButton = Ti.UI.createButton({
-	systemButton: Titanium.UI.iPhone.SystemButton.ADD
-});
-messageButton.addEventListener('click', function(e) {
+function showSendMessageWindow(title, timelineType, replyToMsgId, toUserIds) {
 	var messageWindow = Ti.UI.createWindow({
 		url: 'message_window.js',
-		title: 'new message',
+		title: title,
 		color: themeFGColorMain,
 		backgroundColor: themeBGColor,
 		backgroundColorLight: themeBGColorLight,
 		layout: 'vertical',
-		isPrivate: win1.timeline_type === 'private'
+		isPrivate: timelineType === 'private',
+		replyToMsgId: replyToMsgId,
+		toUserIds: toUserIds,
+		atmos: atmos
 	});
-//	messageWindow.open();
 	Ti.UI.currentTab.open(messageWindow);
+}
+
+var messageButton = Ti.UI.createButton({
+	systemButton: Titanium.UI.iPhone.SystemButton.ADD
+});
+messageButton.addEventListener('click', function(e) {
+	showSendMessageWindow('new message', win1.timeline_type);
 });
 win1.rightNavButton = messageButton;
 
@@ -62,6 +69,7 @@ function setCreatedAt(createdAt) {
 }
 
 var timelineData = [];
+var timelineMetaData = {};
 function updateTimeline(timeline) {
 	var heads = [];
 	var tails = [];
@@ -86,7 +94,7 @@ function updateTimeline(timeline) {
 			row.add(imageView);
 			
 			var nameLabel = Ti.UI.createLabel({
-				width: 120,
+				width: 257,
 	//			height: 12,
 				height: 'auto',
 				left: 58,
@@ -111,17 +119,49 @@ function updateTimeline(timeline) {
 			row.add(commentLabel);
 	
 			var dateLabel = Ti.UI.createLabel({
-				width: 257,
+				width: 180,
 	//			height: 12,
 				height: 'auto',
-				left: 58,
+				right: 0,
 				top: 5,
-				fontSize: 4,
+				font: {fontSize: 1},
 				color: themeFGColorSub
 			});
 			//var createdAtUtc = new Date(tlItem['created_at']);
 			dateLabel.text = String.formatDate(createdAtUtc, 'medium') + ' ' + String.formatTime(createdAtUtc, 'medium');
 			row.add(dateLabel);
+			
+			var replyButton = Ti.UI.createButton({
+				width: 'auto',
+				height: 'auto',
+				left: 58,
+				top: 2,
+				color: themeFGColorSub,
+				backgroundImage: 'reply_s.png'
+			});
+			var replyHandler = (function() {
+				var sourceMsgId = tlItem['_id'];
+				if (tlItem['to_user_id']) { // for private
+					var toUserIds = tlItem['to_user_id'];
+				}
+				if (tlItem['addresses'] && tlItem['addresses']['users']) {
+					var toUserIds = tlItem['addresses']['users'];
+				}
+				if (toUserIds) {
+					var createdBy = tlItem['created_by'];
+					var addressesUsers = [];
+					toUserIds.forEach(function(userId, i, a) { if (userId !== currentUserId) { addressesUsers.push(userId); } });
+					if (createdBy !== currentUserId && addressesUsers.indexOf(createdBy) === -1) {
+						addressesUsers.push(createdBy);
+					}
+				}
+				return function(e) {
+					var orgMsg = timelineMetaData[sourceMsgId];
+					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id'], addressesUsers);
+				};
+			})();
+			replyButton.addEventListener('click', replyHandler);
+			row.add(replyButton);
 			
 			if (newMessageStatus === 'newer') {
 				heads.push(row);
@@ -129,9 +169,14 @@ function updateTimeline(timeline) {
 			else {
 				tails.push(row);
 			}
-			setCreatedAt(createdAtUtc);
+			
+			timelineMetaData[tlItem['_id']] = tlItem;
 		}
 	});
+	timeline.forEach(function(tlItem, i, a) {
+		setCreatedAt(new Date(tlItem['created_at']));
+	});
+	
 	var nextData = heads.concat(timelineData);
 	nextData = nextData.concat(tails);
 	tableView.setData(nextData);

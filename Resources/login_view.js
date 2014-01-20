@@ -52,6 +52,23 @@ postButton.addEventListener('click', function(e) {
 		function(e) {
 			var resJSON = JSON.parse(e.source.responseText);
 			if (resJSON.status === 'login successful') {
+				// atmos.whoami(
+					// function(e) {
+						// var resJSON = JSON.parse(e.source.responseText);
+						// Ti.API.info('resJSON: ' + JSON.stringify(resJSON));
+						// if (resJSON.status == 'ok') {
+							// atmos.currentUserId(resJSON['user_id']);
+							// win.close();
+							// win.onsuccess();
+						// }
+						// else {
+							// alert('whoami was failed.');
+						// }
+					// },
+					// function(e) {
+						// alert('whoami was failed.');
+					// }
+				// );
 				win.close();
 				win.onsuccess();
 			}
