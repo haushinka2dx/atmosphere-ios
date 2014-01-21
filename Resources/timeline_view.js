@@ -186,65 +186,9 @@ function updateTimeline(timeline) {
 }
 
 // pull to refresh--
-var pulling = false;
-var reloading = false;
-var border = Ti.UI.createView({
-		backgroundColor:"#576c89",
-		height:2,
-		bottom:0
-	});
-
-var tableHeader = Ti.UI.createView({
-		backgroundColor:"#e2e7ed",
-		width:320,
-		height:60
-});
-tableHeader.add(border);
-
-var arrow = Ti.UI.createView({
-    backgroundImage:'images/whiteArrow.png',
-    width:23,
-    height:60,
-    bottom:10,
-    left:20
-});
-
-var statusLabel = Ti.UI.createLabel({
-    text:"Pull to reload",
-    left:55,
-    width:200,
-    bottom:30,
-    height:"auto",
-    color:"#576c89",
-    textAlign:"center",
-    font:{fontSize:13,fontWeight:"bold"},
-    shadowColor:"#999",
-    shadowOffset:{x:0,y:1}
-});
-
-var lastUpdatedLabel = Ti.UI.createLabel({
-    text:"Last Updated: "+formatDate(),
-    left:55,
-    width:200,
-    bottom:15,
-    height:"auto",
-    color:"#576c89",
-    textAlign:"center",
-    font:{fontSize:12},
-    shadowColor:"#999",
-    shadowOffset:{x:0,y:1}
-});
-
-var actInd = Titanium.UI.createActivityIndicator({
-    left:20,
-    bottom:13,
-    width:30,
-    height:30
-});
-
 function formatDate(){
     var date = new Date;
-    var datestr = date.getMonth()+'/'+date.getDate()+'/'+date.getFullYear();
+    var datestr = (date.getMonth() + 1) +'/'+date.getDate()+'/'+date.getFullYear();
     if (date.getHours()>=12){
        datestr+=' '+(date.getHours()==12 ? 
           date.getHours() : date.getHours()-12)+':'+
@@ -255,6 +199,17 @@ function formatDate(){
     }
     return datestr;
 }
+var pulling = false;
+var reloading = false;
+var refreshHeaderTheme = theme.pullToRefreshTableHeader(formatDate());
+var border = Ti.UI.createView(refreshHeaderTheme.border);
+var tableHeader = Ti.UI.createView(refreshHeaderTheme.tableHeader);
+tableHeader.add(border);
+var arrow = Ti.UI.createView(refreshHeaderTheme.arrow);
+var statusLabel = Ti.UI.createLabel(refreshHeaderTheme.statusLabel);
+var lastUpdatedLabel = Ti.UI.createLabel(refreshHeaderTheme.lastUpdatedLabel);
+var actInd = Titanium.UI.createActivityIndicator(refreshHeaderTheme.actInd);
+
 
 tableHeader.add(arrow);
 tableHeader.add(statusLabel);
