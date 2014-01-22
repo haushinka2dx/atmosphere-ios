@@ -11,6 +11,7 @@ var themeBGColorLight = theme.backgroundColorLight(win1.timeline_type);
 var reloadButton = Ti.UI.createButton({
 	systemButton: Titanium.UI.iPhone.SystemButton.REFRESH
 });
+
 reloadButton.addEventListener('click', function(e) {
 	refreshTimeline();
 });
@@ -184,7 +185,96 @@ function updateTimeline(timeline) {
 	timelineData = nextData;
 }
 
+// pull to refresh--
+function formatDate(){
+    var date = new Date;
+    var datestr = (date.getMonth() + 1) +'/'+date.getDate()+'/'+date.getFullYear();
+    if (date.getHours()>=12){
+       datestr+=' '+(date.getHours()==12 ? 
+          date.getHours() : date.getHours()-12)+':'+
+          date.getMinutes()+' PM';
+    }
+    else{
+        datestr+=' '+date.getHours()+':'+date.getMinutes()+' AM';
+    }
+    return datestr;
+}
+var pulling = false;
+var reloading = false;
+var refreshHeaderTheme = theme.pullToRefreshTableHeader(formatDate());
+var border = Ti.UI.createView(refreshHeaderTheme.border);
+var tableHeader = Ti.UI.createView(refreshHeaderTheme.tableHeader);
+tableHeader.add(border);
+var arrow = Ti.UI.createView(refreshHeaderTheme.arrow);
+var statusLabel = Ti.UI.createLabel(refreshHeaderTheme.statusLabel);
+var lastUpdatedLabel = Ti.UI.createLabel(refreshHeaderTheme.lastUpdatedLabel);
+var actInd = Titanium.UI.createActivityIndicator(refreshHeaderTheme.actInd);
+
+
+tableHeader.add(arrow);
+tableHeader.add(statusLabel);
+tableHeader.add(lastUpdatedLabel);
+tableHeader.add(actInd);
+tableView.headerPullView = tableHeader;
+
 win1.add(tableView);
+
+tableView.beginReloading = function(){
+    refreshTimeline();
+};
+
+function endReloading(success){
+    tableView.setContentInsets({top:0},{animated:true});
+    reloading = false;
+    if(success){
+        lastUpdatedLabel.text = "Last Updated: "+formatDate();
+    }
+    statusLabel.text = "Pull down to refresh...";
+    actInd.hide();
+    arrow.show();
+};
+
+tableView.addEventListener('scroll', function(e) {
+    var offset = e.contentOffset.y;
+    if (offset <= -65.0 && !pulling) {
+        var t = Ti.UI.create2DMatrix();
+        t = t.rotate(-180);
+        pulling = true;
+        arrow.animate({
+            transform : t,
+            duration : 180
+        });
+        statusLabel.text = "Release to refresh...";
+    } else if (pulling && offset > -65.0 && offset < 0) {
+        pulling = false;
+        var t = Ti.UI.create2DMatrix();
+        arrow.animate({
+            transform : t,
+            duration : 180
+        });
+        statusLabel.text = "Pull down to refresh...";
+    }
+});
+
+tableView.addEventListener('dragEnd', function() {
+    if (pulling && !reloading) {
+        reloading = true;
+        pulling = false;
+        arrow.hide();
+        actInd.show();
+        statusLabel.text = "Reloading...";
+        tableView.setContentInsets({
+            top : 60
+        }, {
+            animated : true
+        });
+
+        tableView.scrollToTop(-60, true);
+        arrow.transform = Ti.UI.create2DMatrix();
+        tableView.beginReloading();
+    }
+});
+// --pull to refresh
 
 function refreshTimeline() {
 	// var atmos = require('atmos');
@@ -201,6 +291,7 @@ function refreshTimeline() {
 	else if (win1.timeline_type === 'private') {
 		atmos.getPrivateTimeline(resultApplier);
 	}
+    endReloading(true);
 }
 
 refreshTimeline();

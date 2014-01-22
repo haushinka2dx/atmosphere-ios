@@ -52,3 +52,55 @@ exports.backgroundColorLight = function(theme) {
 	}
 	return ret;
 };
+
+exports.pullToRefreshTableHeader = function(formatDate) {
+    return {
+        border:{
+            backgroundColor : '#576c89',
+            height : 2,
+            bottom : 0,
+        },
+        tableHeader:{
+            backgroundColor : '#e2e7ed',
+            width : 320,
+            height : 60
+        },
+        arrow:{
+            //backgroundImage:'images/whiteArrow.png',// TODO 画像が・・・
+            width:23,
+            height:60,
+            bottom:10,
+            left:20
+        },
+        statusLabel : {
+            text:"Pull to reload",
+            left:55,
+            width:200,
+            bottom:30,
+            height:"auto",
+            color:"#576c89",
+            textAlign:"center",
+            font:{fontSize:13,fontWeight:"bold"},
+            shadowColor:"#999",
+            shadowOffset:{x:0,y:1}
+        },
+        lastUpdatedLabel : {
+            text:"Last Updated: " + formatDate,
+            left:55,
+            width:200,
+            bottom:15,
+            height:"auto",
+            color:"#576c89",
+            textAlign:"center",
+            font:{fontSize:12},
+            shadowColor:"#999",
+            shadowOffset:{x:0,y:1}
+        },
+        actInd : {
+            left:20,
+            bottom:13,
+            width:30,
+            height:30
+        }
+    };
+}
