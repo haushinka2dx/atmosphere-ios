@@ -160,7 +160,7 @@ function updateTimeline(timeline) {
 				left: 58,
 				top: 2,
 				color: themeFGColorSub,
-				backgroundImage: 'reply_s.png'
+				title: "reply"
 			});
 			var replyHandler = (function() {
 				var sourceMsgId = tlItem['_id'];
