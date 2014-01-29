@@ -1,5 +1,6 @@
 var win1 = Ti.UI.currentWindow;
 
+var utils = require('utils');
 var atmos = win1.atmos;
 var currentUserId = atmos.currentUserId();
 var theme = require('theme');
@@ -282,14 +283,19 @@ function refreshTimeline() {
 		var resJSON = JSON.parse(e.source.responseText);
 		updateTimeline(resJSON.results);
 	};
+	
+	var options = {};
+	if (latestMessageCreatedAt) {
+		options['future_than'] = utils.toUtcDateTimeString(latestMessageCreatedAt);
+	}
 	if (win1.timeline_type === 'global') {
-		atmos.getGlobalTimeline(resultApplier);
+		atmos.getGlobalTimeline(options, resultApplier);
 	}
 	else if (win1.timeline_type === 'talk') {
-		atmos.getTalkTimeline(resultApplier);
+		atmos.getTalkTimeline(options, resultApplier);
 	}
 	else if (win1.timeline_type === 'private') {
-		atmos.getPrivateTimeline(resultApplier);
+		atmos.getPrivateTimeline(options, resultApplier);
 	}
     endReloading(true);
 }

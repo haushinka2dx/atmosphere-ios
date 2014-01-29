@@ -19,16 +19,16 @@ exports.login = function(userId, password, onsuccess, onfailure) {
 	sendRequest(urlBase + 'auth/login', 'POST', data, onsuccess, onfailure);
 };
 
-exports.getGlobalTimeline = function(onsuccess, onfailure) {
-	sendRequest(urlBase + 'messages/global_timeline', 'GET', undefined, onsuccess, onfailure);	
+exports.getGlobalTimeline = function(options, onsuccess, onfailure) {
+	sendRequest(urlBase + 'messages/global_timeline', 'GET', options, onsuccess, onfailure);	
 };
 
-exports.getTalkTimeline = function(onsuccess, onfailure) {
-	sendRequest(urlBase + 'messages/talk_timeline', 'GET', undefined, onsuccess, onfailure);
+exports.getTalkTimeline = function(options, onsuccess, onfailure) {
+	sendRequest(urlBase + 'messages/talk_timeline', 'GET', options, onsuccess, onfailure);
 };
 
-exports.getPrivateTimeline = function(onsuccess, onfailure) {
-	sendRequest(urlBase + 'private/timeline', 'GET', undefined, onsuccess, onfailure);
+exports.getPrivateTimeline = function(options, onsuccess, onfailure) {
+	sendRequest(urlBase + 'private/timeline', 'GET', options, onsuccess, onfailure);
 };
 
 exports.sendMessage = function(message, replyToMsgId, onsuccess, onfailure) {
@@ -48,6 +48,15 @@ exports.getAvatorUrl = function(userId) {
 function sendRequest(url, method, data, callbackOnSuccess, callbackOnFailure) {
 	var xhr = Ti.Network.createHTTPClient();
 	xhr.setRequestHeader(atmosSessionIdKey, atmosSessionId);
+	if (method === 'GET' && data) {
+		var params = [];
+		Object.keys(data).forEach(function(key, i, a) {
+			params.push(key + '=' + data[key]);
+		});
+		if (params.length > 0) {
+			url = url + '?' + params.join('&');
+		}
+	}
 	xhr.open(method, url);
 	xhr.onload = function(e) {
 		Ti.API.info(e.source.responseText);
