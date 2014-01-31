@@ -1,5 +1,6 @@
 var win1 = Ti.UI.currentWindow;
 
+var maxCount = 20;
 var utils = require('utils');
 var atmos = win1.atmos;
 var currentUserId = atmos.currentUserId();
@@ -45,6 +46,26 @@ win1.rightNavButton = messageButton;
 var tableView = Ti.UI.createTableView({
 	data: []
 });
+
+var tableFooter = Ti.UI.createView({
+	height: '36',
+	layout: 'vertical',
+	backgroundColor: themeBGColor
+});
+
+var readMoreButton = Ti.UI.createButton({
+	width: 320,
+	height: 'auto',
+	left: 0,
+	top: 2,
+	color: themeFGColorSub,
+	backgroundColor: themeBGColorLight,
+	title: "read more",
+	textAlign: Titanium.UI.TEXT_ALIGNMENT_CENTER
+});
+readMoreButton.addEventListener('click', readMoreTimeline);
+tableFooter.add(readMoreButton);
+tableView.footerView = tableFooter;
 
 var latestMessageCreatedAt = undefined;
 var oldestMessageCreatedAt = undefined;
@@ -278,26 +299,48 @@ tableView.addEventListener('dragEnd', function() {
 // --pull to refresh
 
 function refreshTimeline() {
-	// var atmos = require('atmos');
 	var resultApplier = function(e) {
 		var resJSON = JSON.parse(e.source.responseText);
 		updateTimeline(resJSON.results);
 	};
 	
 	var options = {};
+	options['count'] = maxCount;
 	if (latestMessageCreatedAt) {
 		options['future_than'] = utils.toUtcDateTimeString(latestMessageCreatedAt);
 	}
-	if (win1.timeline_type === 'global') {
-		atmos.getGlobalTimeline(options, resultApplier);
-	}
-	else if (win1.timeline_type === 'talk') {
-		atmos.getTalkTimeline(options, resultApplier);
-	}
-	else if (win1.timeline_type === 'private') {
-		atmos.getPrivateTimeline(options, resultApplier);
-	}
+	getTimelineRefresher(win1.timeline_type)(options, resultApplier);
+	
     endReloading(true);
+}
+
+function readMoreTimeline() {
+	var resultApplier = function(e) {
+		var resJSON = JSON.parse(e.source.responseText);
+		updateTimeline(resJSON.results);
+	};
+	
+	var options = {};
+	options['count'] = maxCount;
+	if (oldestMessageCreatedAt) {
+		options['past_than'] = utils.toUtcDateTimeString(oldestMessageCreatedAt);
+	}
+	getTimelineRefresher(win1.timeline_type)(options, resultApplier);
+}
+
+function getTimelineRefresher(timelineType) {
+	if (timelineType === 'global') {
+		return atmos.getGlobalTimeline;
+	}
+	else if (timelineType === 'talk') {
+		return atmos.getTalkTimeline;
+	}
+	else if (timelineType === 'private') {
+		return atmos.getPrivateTimeline;
+	}
+	else {
+		return undefined;
+	}
 }
 
 refreshTimeline();
