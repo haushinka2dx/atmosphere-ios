@@ -2,7 +2,7 @@
 <ti:app xmlns:ti="http://ti.appcelerator.org">
     <id>org.atmos.app.ios.titanium</id>
     <name>atmos</name>
-    <version>1.0</version>
+    <version>0.2</version>
     <publisher>hirano</publisher>
     <url>http://</url>
     <description>not specified</description>
