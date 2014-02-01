@@ -302,6 +302,7 @@ function refreshTimeline() {
 	var resultApplier = function(e) {
 		var resJSON = JSON.parse(e.source.responseText);
 		updateTimeline(resJSON.results);
+		endReloading(true);
 	};
 	
 	var options = {};
@@ -310,8 +311,6 @@ function refreshTimeline() {
 		options['future_than'] = utils.toUtcDateTimeString(latestMessageCreatedAt);
 	}
 	getTimelineRefresher(win1.timeline_type)(options, resultApplier);
-	
-    endReloading(true);
 }
 
 function readMoreTimeline() {
