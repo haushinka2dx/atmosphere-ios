@@ -36,11 +36,18 @@ var messageTextArea = Ti.UI.createTextArea({
 	color: win.color,
 	backgroundColor: win.backgroundColorLight,
 });
-if (!win.isPrivate && win.toUserIds && win.toUserIds.length > 0) {
+if (!win.isPrivate && (win.toUserIds && win.toUserIds.length > 0) || (win.toGroupIds && win.toGroupIds.length > 0)) {
 	var destAddresses = '';
-	win.toUserIds.forEach(function(userId, i, a) {
-		destAddresses += ' @' + userId;
-	});
+	if (win.toUserIds && win.toUserIds.length > 0) {
+		win.toUserIds.forEach(function(userId, i, a) {
+			destAddresses += ' @' + userId;
+		});
+	}
+	if (win.toGroupIds && win.toGroupIds.length > 0) {
+		win.toGroupIds.forEach(function(groupId, i, a) {
+			destAddresses += ' $' + groupId;
+		});
+	}
 	messageTextArea.value = destAddresses;
 }
 win.add(messageTextArea);

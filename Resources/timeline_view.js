@@ -19,7 +19,7 @@ reloadButton.addEventListener('click', function(e) {
 });
 win1.leftNavButton = reloadButton;
 
-function showSendMessageWindow(title, timelineType, replyToMsgId, toUserIds) {
+function showSendMessageWindow(title, timelineType, replyToMsgId, toUserIds, toGroupIds) {
 	var messageWindow = Ti.UI.createWindow({
 		url: 'message_window.js',
 		title: title,
@@ -30,6 +30,7 @@ function showSendMessageWindow(title, timelineType, replyToMsgId, toUserIds) {
 		isPrivate: timelineType === 'private',
 		replyToMsgId: replyToMsgId,
 		toUserIds: toUserIds,
+		toGroupIds: toGroupIds,
 		atmos: atmos
 	});
 	Ti.UI.currentTab.open(messageWindow);
@@ -180,7 +181,7 @@ function updateTimeline(timeline) {
 				}
 				return function(e) {
 					var orgMsg = timelineMetaData[sourceMsgId];
-					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id'], addressesUsers);
+					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id'], addressesUsers, tlItem['addresses']['groups']);
 				};
 			})();
 			replyButton.addEventListener('click', replyHandler);

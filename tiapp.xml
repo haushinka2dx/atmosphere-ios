@@ -2,11 +2,11 @@
 <ti:app xmlns:ti="http://ti.appcelerator.org">
     <id>org.atmos.app.ios.titanium</id>
     <name>atmos</name>
-    <version>0.21</version>
+    <version>0.22</version>
     <publisher>hirano</publisher>
     <url>http://</url>
     <description>not specified</description>
-    <copyright>2013 by hirano</copyright>
+    <copyright>2014 by hirano</copyright>
     <icon>atmos_app_icon_120.png</icon>
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
@@ -47,5 +47,5 @@
         <target device="mobileweb">false</target>
         <target device="tizen">false</target>
     </deployment-targets>
-    <sdk-version>3.2.3.GA</sdk-version>
+    <sdk-version>3.3.0.GA</sdk-version>
 </ti:app>
