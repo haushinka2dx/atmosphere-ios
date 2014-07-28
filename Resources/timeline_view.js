@@ -181,7 +181,8 @@ function updateTimeline(timeline) {
 				}
 				return function(e) {
 					var orgMsg = timelineMetaData[sourceMsgId];
-					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id'], addressesUsers, tlItem['addresses']['groups']);
+					var groupIds = tlItem['address'] && tlItem['address']['groups'] ? tlItem['address']['groups'] : [];
+					showSendMessageWindow('reply message', win1.timeline_type, orgMsg['_id'], addressesUsers, groupIds);
 				};
 			})();
 			replyButton.addEventListener('click', replyHandler);
