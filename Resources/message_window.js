@@ -38,15 +38,18 @@ var messageTextArea = Ti.UI.createTextArea({
 });
 if (!win.isPrivate && (win.toUserIds && win.toUserIds.length > 0) || (win.toGroupIds && win.toGroupIds.length > 0)) {
 	var destAddresses = '';
-	if (win.toUserIds && win.toUserIds.length > 0) {
+	if (win.toUserIds) {
 		win.toUserIds.forEach(function(userId, i, a) {
 			destAddresses += ' @' + userId;
 		});
 	}
-	if (win.toGroupIds && win.toGroupIds.length > 0) {
+	if (win.toGroupIds) {
 		win.toGroupIds.forEach(function(groupId, i, a) {
 			destAddresses += ' $' + groupId;
 		});
+	}
+	if (destAddresses.length > 0) {
+		destAddresses = destAddresses + ' ';
 	}
 	messageTextArea.value = destAddresses;
 }
